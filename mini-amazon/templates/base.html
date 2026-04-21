@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Mini Amazon{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="{{ url_for('index') }}" class="nav-brand">🛒 Mini Amazon</a>
+  <div class="nav-search">
+    <form action="{{ url_for('index') }}" method="get">
+      <input type="text" name="search" placeholder="Search products..." value="{{ request.args.get('search','') }}"/>
+      <button type="submit">Search</button>
+    </form>
+  </div>
+  <div class="nav-links">
+    <a href="{{ url_for('cart') }}" class="nav-cart">
+      🛍️ Cart <span class="cart-badge">{{ cart_count() }}</span>
+    </a>
+    {% if current_user() %}
+      {% if current_user()['is_admin'] %}
+        <a href="{{ url_for('admin_dashboard') }}" class="nav-link admin-link">⚙️ Admin</a>
+      {% endif %}
+      <span class="nav-user">👤 {{ current_user()['name'] }}</span>
+      <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+    {% else %}
+      <a href="{{ url_for('login') }}" class="nav-link">Login</a>
+      <a href="{{ url_for('register') }}" class="nav-link btn-register">Register</a>
+    {% endif %}
+  </div>
+</nav>
+
+<div class="flash-container">
+  {% for cat, msg in get_flashed_messages(with_categories=True) %}
+    <div class="flash flash-{{ cat }}">{{ msg }}</div>
+  {% endfor %}
+</div>
+
+<main class="main-content">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <p>© 2025 Mini Amazon · Built with Flask & SQLite</p>
+</footer>
+
+</body>
+</html>

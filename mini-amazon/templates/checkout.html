@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Checkout — Mini Amazon{% endblock %}
+{% block content %}
+
+<div class="page-container">
+  <h2>📦 Checkout</h2>
+  <div class="checkout-layout">
+
+    <form action="{{ url_for('checkout') }}" method="post" class="checkout-form">
+      <h3>Delivery Details</h3>
+      <div class="field">
+        <label>Full Name</label>
+        <input type="text" name="name" required placeholder="Kavya Sharma"/>
+      </div>
+      <div class="field">
+        <label>Delivery Address</label>
+        <textarea name="address" required rows="3" placeholder="House No, Street, City, PIN"></textarea>
+      </div>
+      <div class="field">
+        <label>Phone Number</label>
+        <input type="tel" name="phone" required placeholder="9XXXXXXXXX"/>
+      </div>
+      <button type="submit" class="btn-primary full-btn">Continue to Payment →</button>
+    </form>
+
+    <div class="order-summary-box">
+      <h3>Your Order</h3>
+      {% for item in items %}
+      <div class="summary-item">
+        <span>{{ item.product['name'] }} × {{ item.qty }}</span>
+        <span>₹{{ "%.2f"|format(item.subtotal) }}</span>
+      </div>
+      {% endfor %}
+      <div class="summary-divider"></div>
+      <div class="summary-total">
+        <strong>Total</strong><strong>₹{{ "%.2f"|format(total) }}</strong>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

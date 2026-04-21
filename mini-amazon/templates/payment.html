@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Payment — Mini Amazon{% endblock %}
+{% block content %}
+
+<div class="page-container payment-page">
+  <h2>💳 Secure Payment</h2>
+  <p class="payment-sub">This is a demo payment page. No real money is charged.</p>
+
+  <div class="payment-layout">
+
+    <form action="{{ url_for('payment') }}" method="post" class="payment-form" onsubmit="handlePay(event)">
+      <div class="payment-methods">
+        <label class="pm-option active" id="pm-card">
+          <input type="radio" name="method" value="card" checked/> 💳 Credit / Debit Card
+        </label>
+        <label class="pm-option" id="pm-upi">
+          <input type="radio" name="method" value="upi"/> 📱 UPI
+        </label>
+        <label class="pm-option" id="pm-cod">
+          <input type="radio" name="method" value="cod"/> 📦 Cash on Delivery
+        </label>
+      </div>
+
+      <div id="card-fields">
+        <div class="field">
+          <label>Card Number</label>
+          <input type="text" placeholder="4242 4242 4242 4242" maxlength="19" id="card-num"
+                 oninput="fmtCard(this)"/>
+        </div>
+        <div class="field-row-2">
+          <div class="field">
+            <label>Expiry</label>
+            <input type="text" placeholder="MM/YY" maxlength="5"/>
+          </div>
+          <div class="field">
+            <label>CVV</label>
+            <input type="text" placeholder="•••" maxlength="3"/>
+          </div>
+        </div>
+        <div class="field">
+          <label>Name on Card</label>
+          <input type="text" placeholder="KAVYA SHARMA"/>
+        </div>
+      </div>
+
+      <div id="upi-fields" style="display:none">
+        <div class="field">
+          <label>UPI ID</label>
+          <input type="text" placeholder="name@upi"/>
+        </div>
+      </div>
+
+      <div id="cod-fields" style="display:none">
+        <div class="cod-note">✅ Pay when your order is delivered. Easy!</div>
+      </div>
+
+      <div class="pay-total">
+        Amount to pay: <strong>₹{{ "%.2f"|format(order.total) }}</strong>
+      </div>
+
+      <button type="submit" class="btn-pay" id="pay-btn">
+        Pay ₹{{ "%.2f"|format(order.total) }} Now
+      </button>
+      <p class="pay-secure">🔒 Secured with 256-bit encryption</p>
+    </form>
+
+    <div class="order-summary-box">
+      <h3>Delivery To</h3>
+      <p><strong>{{ order.name }}</strong></p>
+      <p>{{ order.address }}</p>
+      <p>📞 {{ order.phone }}</p>
+      <div class="summary-divider"></div>
+      <div class="summary-total">
+        <strong>Total</strong><strong>₹{{ "%.2f"|format(order.total) }}</strong>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Payment method toggle
+document.querySelectorAll('input[name="method"]').forEach(r => {
+  r.addEventListener("change", () => {
+    document.getElementById("card-fields").style.display = r.value === "card" ? "block" : "none";
+    document.getElementById("upi-fields").style.display  = r.value === "upi"  ? "block" : "none";
+    document.getElementById("cod-fields").style.display  = r.value === "cod"  ? "block" : "none";
+    document.querySelectorAll(".pm-option").forEach(l => l.classList.remove("active"));
+    r.closest(".pm-option").classList.add("active");
+    const btn = document.getElementById("pay-btn");
+    btn.textContent = r.value === "cod" ? "Place Order (Pay on Delivery)" : btn.textContent;
+  });
+});
+
+// Card number formatting
+function fmtCard(el) {
+  let v = el.value.replace(/\D/g, "").substring(0, 16);
+  el.value = v.replace(/(.{4})/g, "$1 ").trim();
+}
+
+// Simulate processing
+function handlePay(e) {
+  const btn = document.getElementById("pay-btn");
+  btn.textContent = "⏳ Processing...";
+  btn.disabled = true;
+}
+</script>
+
+{% endblock %}

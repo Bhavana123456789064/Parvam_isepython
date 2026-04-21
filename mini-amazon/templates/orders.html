@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}All Orders — Admin{% endblock %}
+{% block content %}
+
+<div class="page-container">
+  <div class="admin-page-header">
+    <h2>📋 All Orders</h2>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn-outline">← Dashboard</a>
+  </div>
+
+  <table class="admin-table">
+    <thead>
+      <tr><th>#</th><th>Customer</th><th>Email</th><th>Total</th><th>Status</th><th>Date</th><th>Update</th></tr>
+    </thead>
+    <tbody>
+      {% for o in orders %}
+      <tr>
+        <td>{{ o['id'] }}</td>
+        <td>{{ o['uname'] }}</td>
+        <td>{{ o['email'] }}</td>
+        <td>₹{{ "%.2f"|format(o['total']) }}</td>
+        <td><span class="status-badge status-{{ o['status']|lower }}">{{ o['status'] }}</span></td>
+        <td>{{ o['created_at'][:10] }}</td>
+        <td>
+          <form action="{{ url_for('update_order_status') }}" method="post" style="display:flex;gap:0.4rem">
+            <input type="hidden" name="order_id" value="{{ o['id'] }}"/>
+            <select name="status" class="status-select">
+              <option value="Pending"   {% if o['status']=='Pending'   %}selected{% endif %}>Pending</option>
+              <option value="Paid"      {% if o['status']=='Paid'      %}selected{% endif %}>Paid</option>
+              <option value="Shipped"   {% if o['status']=='Shipped'   %}selected{% endif %}>Shipped</option>
+              <option value="Delivered" {% if o['status']=='Delivered' %}selected{% endif %}>Delivered</option>
+              <option value="Cancelled" {% if o['status']=='Cancelled' %}selected{% endif %}>Cancelled</option>
+            </select>
+            <button type="submit" class="btn-sm green">Save</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

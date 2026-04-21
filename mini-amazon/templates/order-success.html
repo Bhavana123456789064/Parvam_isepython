@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Order Placed! — Mini Amazon{% endblock %}
+{% block content %}
+
+<div class="page-container success-page">
+  <div class="success-icon">🎉</div>
+  <h2>Order Placed Successfully!</h2>
+  <p>Thank you, <strong>{{ order['name'] }}</strong>! Your order #{{ order['id'] }} has been confirmed.</p>
+
+  <div class="success-card">
+    <h3>Order Summary</h3>
+    {% for item in items %}
+    <div class="summary-item">
+      <span>{{ item['pname'] }} × {{ item['quantity'] }}</span>
+      <span>₹{{ "%.2f"|format(item['price'] * item['quantity']) }}</span>
+    </div>
+    {% endfor %}
+    <div class="summary-divider"></div>
+    <div class="summary-total">
+      <strong>Total Paid</strong><strong>₹{{ "%.2f"|format(order['total']) }}</strong>
+    </div>
+  </div>
+
+  <div class="success-delivery">
+    <p>📦 Delivering to: {{ order['address'] }}</p>
+    <p>📞 Contact: {{ order['phone'] }}</p>
+    <p>🕒 Expected delivery: 3–5 business days</p>
+  </div>
+
+  <a href="{{ url_for('index') }}" class="btn-primary">Continue Shopping</a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ product['name'] }} — Mini Amazon{% endblock %}
+{% block content %}
+
+<div class="product-detail">
+  <div class="pd-image">
+    <img src="{{ product['image_url'] }}" alt="{{ product['name'] }}"/>
+  </div>
+  <div class="pd-info">
+    <span class="prod-category">{{ product['category'] }}</span>
+    <h1>{{ product['name'] }}</h1>
+    <p class="pd-desc">{{ product['description'] }}</p>
+    <div class="pd-price">₹{{ "%.2f"|format(product['price']) }}</div>
+    <p class="pd-stock">
+      {% if product['stock'] > 5 %}
+        ✅ In Stock ({{ product['stock'] }} left)
+      {% elif product['stock'] > 0 %}
+        ⚠️ Only {{ product['stock'] }} left!
+      {% else %}
+        ❌ Out of Stock
+      {% endif %}
+    </p>
+    {% if product['stock'] > 0 %}
+    <form action="{{ url_for('add_to_cart', pid=product['id']) }}" method="post" class="pd-form">
+      <label>Quantity:</label>
+      <input type="number" name="qty" value="1" min="1" max="{{ product['stock'] }}"/>
+      <button type="submit" class="btn-primary">🛒 Add to Cart</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+{% if related %}
+<section class="related-section">
+  <h3>Related Products</h3>
+  <div class="product-grid">
+    {% for p in related %}
+    <div class="product-card">
+      <a href="{{ url_for('product', pid=p['id']) }}">
+        <img src="{{ p['image_url'] }}" alt="{{ p['name'] }}" class="prod-img"/>
+      </a>
+      <div class="prod-info">
+        <a href="{{ url_for('product', pid=p['id']) }}" class="prod-name">{{ p['name'] }}</a>
+        <div class="prod-bottom">
+          <span class="prod-price">₹{{ "%.2f"|format(p['price']) }}</span>
+          <form action="{{ url_for('add_to_cart', pid=p['id']) }}" method="post">
+            <input type="hidden" name="qty" value="1"/>
+            <button type="submit" class="btn-cart">Add</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}

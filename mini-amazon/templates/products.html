@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Manage Products — Admin{% endblock %}
+{% block content %}
+
+<div class="page-container">
+  <div class="admin-page-header">
+    <h2>📦 Manage Products</h2>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn-outline">← Dashboard</a>
+  </div>
+
+  <!-- Add Product Form -->
+  <details class="add-form-toggle">
+    <summary>➕ Add New Product</summary>
+    <form action="{{ url_for('admin_products') }}" method="post" class="admin-form">
+      <input type="hidden" name="action" value="add"/>
+      <div class="form-grid">
+        <div class="field"><label>Name</label><input type="text" name="name" required/></div>
+        <div class="field"><label>Category</label><input type="text" name="category" required/></div>
+        <div class="field"><label>Price (₹)</label><input type="number" name="price" step="0.01" required/></div>
+        <div class="field"><label>Stock</label><input type="number" name="stock" required/></div>
+        <div class="field full-span"><label>Description</label><textarea name="description" rows="2"></textarea></div>
+        <div class="field full-span"><label>Image URL</label><input type="url" name="image_url"/></div>
+      </div>
+      <button type="submit" class="btn-primary">Add Product</button>
+    </form>
+  </details>
+
+  <!-- Products Table -->
+  <table class="admin-table">
+    <thead>
+      <tr><th>ID</th><th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for p in products %}
+      <tr>
+        <td>{{ p['id'] }}</td>
+        <td><img src="{{ p['image_url'] }}" class="admin-thumb"/></td>
+        <td>{{ p['name'] }}</td>
+        <td>{{ p['category'] }}</td>
+        <td>₹{{ "%.2f"|format(p['price']) }}</td>
+        <td>{{ p['stock'] }}</td>
+        <td>
+          <details class="inline-edit">
+            <summary class="btn-sm">Edit</summary>
+            <form action="{{ url_for('admin_products') }}" method="post" class="inline-form">
+              <input type="hidden" name="action" value="edit"/>
+              <input type="hidden" name="pid" value="{{ p['id'] }}"/>
+              <input type="text"   name="name"        value="{{ p['name'] }}"        required/>
+              <input type="text"   name="category"    value="{{ p['category'] }}"/>
+              <input type="number" name="price"       value="{{ p['price'] }}"       step="0.01"/>
+              <input type="number" name="stock"       value="{{ p['stock'] }}"/>
+              <input type="text"   name="description" value="{{ p['description'] }}"/>
+              <input type="url"    name="image_url"   value="{{ p['image_url'] }}"/>
+              <button type="submit" class="btn-sm green">Save</button>
+            </form>
+          </details>
+          <form action="{{ url_for('admin_products') }}" method="post" style="display:inline"
+                onsubmit="return confirm('Delete this product?')">
+            <input type="hidden" name="action" value="delete"/>
+            <input type="hidden" name="pid" value="{{ p['id'] }}"/>
+            <button type="submit" class="btn-sm red">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
