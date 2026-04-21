@@ -1,0 +1,267 @@
+/* ── Reset & Base ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f4f8;
+  color: #1a202c;
+  min-height: 100vh;
+}
+
+/* ── Page Layout ─────────────────────────────────────────────────── */
+.page-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+}
+
+/* ── Header ──────────────────────────────────────────────────────── */
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.header-icon {
+  font-size: 2.5rem;
+  color: #e53e3e;
+  margin-bottom: 0.5rem;
+}
+.header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2d3748;
+}
+.header .subtitle {
+  margin-top: 0.4rem;
+  color: #718096;
+  font-size: 0.95rem;
+}
+
+/* ── Main Grid ───────────────────────────────────────────────────── */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (max-width: 768px) {
+  .main-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Cards ───────────────────────────────────────────────────────── */
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.75rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+.card h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1.25rem;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0.6rem;
+}
+
+/* ── Form Fields ─────────────────────────────────────────────────── */
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+.field label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #718096;
+  margin-bottom: 0.35rem;
+}
+.field input {
+  padding: 0.6rem 0.85rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #2d3748;
+  background: #f7fafc;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+.field input:focus {
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66,153,225,0.15);
+  background: #fff;
+}
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.75rem;
+}
+
+/* ── BMI Display ─────────────────────────────────────────────────── */
+.bmi-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f7fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin: 1.25rem 0 0.75rem;
+}
+.bmi-left, .bmi-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.bmi-label, .bmi-category-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #a0aec0;
+}
+.bmi-value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #2d3748;
+  line-height: 1;
+}
+.bmi-right { align-items: flex-end; }
+
+/* ── Badges ──────────────────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 99px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: #e2e8f0;
+  color: #4a5568;
+}
+.badge-underweight { background: #bee3f8; color: #2b6cb0; }
+.badge-normal      { background: #c6f6d5; color: #276749; }
+.badge-overweight  { background: #feebc8; color: #c05621; }
+.badge-obese       { background: #fed7d7; color: #9b2c2c; }
+
+/* ── BMI Scale Bar ───────────────────────────────────────────────── */
+.bmi-scale {
+  margin: 0.5rem 0 1.25rem;
+  position: relative;
+}
+.scale-bar {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr 1fr 1fr;
+  border-radius: 8px;
+  overflow: hidden;
+  height: 42px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-align: center;
+}
+.scale-seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.3;
+  padding: 2px 4px;
+}
+.scale-seg.underweight { background: #bee3f8; color: #2b6cb0; }
+.scale-seg.normal      { background: #c6f6d5; color: #276749; }
+.scale-seg.overweight  { background: #feebc8; color: #c05621; }
+.scale-seg.obese       { background: #fed7d7; color: #9b2c2c; }
+
+.scale-pointer-wrap {
+  position: relative;
+  height: 16px;
+}
+.scale-pointer {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 0.8rem;
+  color: #2d3748;
+  transition: left 0.3s ease, opacity 0.3s;
+  line-height: 1;
+  top: 2px;
+}
+
+/* ── Save Button ─────────────────────────────────────────────────── */
+.btn-save {
+  width: 100%;
+  padding: 0.75rem;
+  background: #4299e1;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  margin-top: 0.25rem;
+}
+.btn-save:hover  { background: #3182ce; }
+.btn-save:active { transform: scale(0.98); }
+
+.save-msg {
+  margin-top: 0.6rem;
+  font-size: 0.88rem;
+  min-height: 1.2rem;
+}
+.save-msg.success { color: #276749; }
+.save-msg.error   { color: #9b2c2c; }
+
+/* ── History Table ───────────────────────────────────────────────── */
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0.6rem;
+  margin-bottom: 1rem;
+}
+.history-header h2 { border: none; margin: 0; padding: 0; }
+.record-count {
+  font-size: 0.8rem;
+  color: #718096;
+  background: #e2e8f0;
+  padding: 0.2rem 0.7rem;
+  border-radius: 99px;
+  font-weight: 600;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+thead th {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  background: #f7fafc;
+  color: #718096;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1.5px solid #e2e8f0;
+  white-space: nowrap;
+}
+tbody tr {
+  border-bottom: 1px solid #edf2f7;
+  transition: background 0.15s;
+}
+tbody tr:hover { background: #f7fafc; }
+tbody td {
+  padding: 0.6rem 0.75rem;
+  color: #4a5568;
+  vertical-align: middle;
+}
+.empty-msg {
+  text-align: center;
+  color: #a0aec0;
+  font-style: italic;
+  padding: 2rem 0 !important;
+}

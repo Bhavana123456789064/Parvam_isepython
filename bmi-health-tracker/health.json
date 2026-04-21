@@ -1,0 +1,24 @@
+{
+  "records": [
+    {
+      "id": 1,
+      "name": "bhavana",
+      "age": 20,
+      "weight": 60.0,
+      "height": 162.0,
+      "bmi": 22.9,
+      "category": "Normal",
+      "date": "2026-04-21"
+    },
+    {
+      "id": 2,
+      "name": "xyz",
+      "age": 20,
+      "weight": 80.0,
+      "height": 159.0,
+      "bmi": 31.6,
+      "category": "Obese",
+      "date": "2026-04-21"
+    }
+  ]
+}

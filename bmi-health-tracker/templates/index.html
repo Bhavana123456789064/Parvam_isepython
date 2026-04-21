@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BMI & Health Tracker</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+
+  <div class="page-wrapper">
+
+    <header class="header">
+      <div class="header-icon">&#9829;</div>
+      <h1>BMI & Health Tracker</h1>
+      <p class="subtitle">Enter your details — BMI calculates instantly as you type</p>
+    </header>
+
+    <main class="main-grid">
+
+      <!-- LEFT: Form -->
+      <section class="card form-card">
+        <h2>Your Details</h2>
+
+        <div class="field">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" placeholder="e.g. Kavya" autocomplete="off" />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="age">Age</label>
+            <input type="number" id="age" placeholder="22" min="1" max="120" />
+          </div>
+          <div class="field">
+            <label for="weight">Weight (kg)</label>
+            <input type="number" id="weight" placeholder="58" min="1" step="0.1" />
+          </div>
+          <div class="field">
+            <label for="height">Height (cm)</label>
+            <input type="number" id="height" placeholder="162" min="1" step="0.1" />
+          </div>
+        </div>
+
+        <!-- Live BMI Display -->
+        <div class="bmi-display" id="bmi-display">
+          <div class="bmi-left">
+            <span class="bmi-label">BMI</span>
+            <span class="bmi-value" id="bmi-value">—</span>
+          </div>
+          <div class="bmi-right">
+            <span class="bmi-category-label">Category</span>
+            <span class="bmi-category badge" id="bmi-category">Enter height &amp; weight</span>
+          </div>
+        </div>
+
+        <!-- BMI Scale Bar -->
+        <div class="bmi-scale" id="bmi-scale-wrap">
+          <div class="scale-bar">
+            <div class="scale-seg underweight">Underweight<br/>&lt;18.5</div>
+            <div class="scale-seg normal">Normal<br/>18.5–24.9</div>
+            <div class="scale-seg overweight">Overweight<br/>25–29.9</div>
+            <div class="scale-seg obese">Obese<br/>≥30</div>
+          </div>
+          <div class="scale-pointer-wrap">
+            <div class="scale-pointer" id="scale-pointer" style="left: 0%; opacity: 0;">▲</div>
+          </div>
+        </div>
+
+        <button class="btn-save" id="btn-save" onclick="saveRecord()">
+          Save Record
+        </button>
+        <p class="save-msg" id="save-msg"></p>
+      </section>
+
+      <!-- RIGHT: History -->
+      <section class="card history-card">
+        <div class="history-header">
+          <h2>Health History</h2>
+          <span class="record-count" id="record-count">{{ records|length }} record(s)</span>
+        </div>
+
+        <div class="table-wrap">
+          <table id="history-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Weight</th>
+                <th>Height</th>
+                <th>BMI</th>
+                <th>Category</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="history-body">
+              {% if records %}
+                {% for r in records|reverse %}
+                <tr>
+                  <td>{{ r.id }}</td>
+                  <td>{{ r.name }}</td>
+                  <td>{{ r.age }}</td>
+                  <td>{{ r.weight }} kg</td>
+                  <td>{{ r.height }} cm</td>
+                  <td><strong>{{ r.bmi }}</strong></td>
+                  <td><span class="badge badge-{{ r.category|lower }}">{{ r.category }}</span></td>
+                  <td>{{ r.date }}</td>
+                </tr>
+                {% endfor %}
+              {% else %}
+                <tr><td colspan="8" class="empty-msg">No records yet. Add your first entry!</td></tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // ── Live BMI Automation ──────────────────────────────────────────
+    const weightInput = document.getElementById("weight");
+    const heightInput = document.getElementById("height");
+    const bmiValueEl  = document.getElementById("bmi-value");
+    const bmiCatEl    = document.getElementById("bmi-category");
+    const pointer     = document.getElementById("scale-pointer");
+
+    const CATEGORY_COLORS = {
+      "Underweight": "badge-underweight",
+      "Normal":      "badge-normal",
+      "Overweight":  "badge-overweight",
+      "Obese":       "badge-obese"
+    };
+
+    function calcBMI() {
+      const w = parseFloat(weightInput.value);
+      const h = parseFloat(heightInput.value);
+      if (!w || !h || w <= 0 || h <= 0) {
+        bmiValueEl.textContent = "—";
+        bmiCatEl.textContent   = "Enter height & weight";
+        bmiCatEl.className     = "bmi-category badge";
+        pointer.style.opacity  = "0";
+        return;
+      }
+      const bmi = Math.round((w / (h * h) * 10000) * 10) / 10;
+      let category = bmi < 18.5 ? "Underweight"
+                   : bmi < 25   ? "Normal"
+                   : bmi < 30   ? "Overweight"
+                                : "Obese";
+
+      bmiValueEl.textContent = bmi.toFixed(1);
+      bmiCatEl.textContent   = category;
+      bmiCatEl.className     = "bmi-category badge " + CATEGORY_COLORS[category];
+
+      // Move pointer on scale bar
+      // Scale: 10 (min display) → 40 (max display) = 100% width
+      const pct = Math.min(Math.max((bmi - 10) / 30 * 100, 0), 100);
+      pointer.style.left    = pct + "%";
+      pointer.style.opacity = "1";
+    }
+
+    weightInput.addEventListener("input", calcBMI);
+    heightInput.addEventListener("input", calcBMI);
+
+    // ── Save Record ──────────────────────────────────────────────────
+    async function saveRecord() {
+      const name   = document.getElementById("name").value.trim();
+      const age    = document.getElementById("age").value;
+      const weight = weightInput.value;
+      const height = heightInput.value;
+      const msg    = document.getElementById("save-msg");
+
+      if (!name || !age || !weight || !height) {
+        msg.textContent = "⚠️ Please fill in all fields before saving.";
+        msg.className   = "save-msg error";
+        return;
+      }
+
+      const res  = await fetch("/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, age, weight, height })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        msg.textContent = "✅ Record saved successfully!";
+        msg.className   = "save-msg success";
+        addRowToTable(data.record);
+        updateCount();
+        // Clear form
+        document.getElementById("name").value = "";
+        document.getElementById("age").value  = "";
+        weightInput.value = "";
+        heightInput.value = "";
+        calcBMI();
+        setTimeout(() => { msg.textContent = ""; }, 3000);
+      } else {
+        msg.textContent = "❌ " + (data.error || "Failed to save.");
+        msg.className   = "save-msg error";
+      }
+    }
+
+    function addRowToTable(r) {
+      const tbody = document.getElementById("history-body");
+      // Remove empty message row if present
+      const empty = tbody.querySelector(".empty-msg");
+      if (empty) empty.closest("tr").remove();
+
+      const catClass = "badge-" + r.category.toLowerCase();
+      const row = `<tr>
+        <td>${r.id}</td>
+        <td>${r.name}</td>
+        <td>${r.age}</td>
+        <td>${r.weight} kg</td>
+        <td>${r.height} cm</td>
+        <td><strong>${r.bmi}</strong></td>
+        <td><span class="badge ${catClass}">${r.category}</span></td>
+        <td>${r.date}</td>
+      </tr>`;
+      tbody.insertAdjacentHTML("afterbegin", row);
+    }
+
+    function updateCount() {
+      const countEl = document.getElementById("record-count");
+      const rows = document.querySelectorAll("#history-body tr:not(.empty-row)").length;
+      countEl.textContent = rows + " record(s)";
+    }
+  </script>
+
+</body>
+</html>
